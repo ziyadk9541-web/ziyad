@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار — نقود وبنوك</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; min-height: 100vh; }
+
+  .header {
+    background: linear-gradient(135deg, #1a3c5e, #2d6a9f);
+    color: white;
+    padding: 24px;
+    text-align: center;
+  }
+  .header h1 { font-size: 1.5rem; margin-bottom: 6px; }
+  .header p { opacity: 0.85; font-size: 0.9rem; }
+
+  .container { max-width: 800px; margin: 24px auto; padding: 0 16px 60px; }
+
+  .progress-bar-wrap { background: #dde4ed; border-radius: 999px; height: 10px; margin-bottom: 8px; }
+  .progress-bar { background: linear-gradient(90deg, #2d6a9f, #38b2ac); height: 10px; border-radius: 999px; transition: width 0.4s; }
+  .progress-label { text-align: center; font-size: 0.85rem; color: #555; margin-bottom: 20px; }
+
+  .section-title {
+    font-size: 1rem; font-weight: 700; color: #1a3c5e;
+    margin: 28px 0 14px; padding-bottom: 8px;
+    border-bottom: 3px solid #2d6a9f;
+  }
+
+  .card {
+    background: white; border-radius: 14px; padding: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07); margin-bottom: 20px;
+  }
+  .q-num { font-size: 0.75rem; color: #2d6a9f; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; margin-left: 6px; }
+  .badge-mc { background: #dbeafe; color: #1e40af; }
+  .badge-tf { background: #dcfce7; color: #166534; }
+
+  .q-text { font-size: 1rem; color: #1a2e42; font-weight: 600; line-height: 1.7; margin-bottom: 16px; }
+
+  .options { display: flex; flex-direction: column; gap: 9px; }
+  .option-btn {
+    background: #f7f9fc; border: 2px solid #dde4ed; border-radius: 10px;
+    padding: 11px 16px; text-align: right; cursor: pointer;
+    font-size: 0.95rem; color: #2c3e50; transition: all 0.2s;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .option-btn:hover:not(:disabled) { border-color: #2d6a9f; background: #eaf2fb; }
+  .option-btn.selected { border-color: #2d6a9f; background: #eaf2fb; color: #1a3c5e; }
+  .option-btn.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: 600; }
+  .option-btn.wrong { border-color: #e74c3c; background: #fdedec; color: #c0392b; }
+  .option-btn.reveal { border-color: #27ae60; background: #eafaf1; color: #1e8449; font-weight: 600; }
+
+  .tf-options { display: flex; gap: 12px; }
+  .tf-btn {
+    flex: 1; padding: 13px; border: 2px solid #dde4ed; border-radius: 10px;
+    background: #f7f9fc; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .tf-btn:hover:not(:disabled) { border-color: #2d6a9f; background: #eaf2fb; }
+  .tf-btn.selected { border-color: #2d6a9f; background: #eaf2fb; color: #1a3c5e; }
+  .tf-btn.correct { border-color: #27ae60; background: #eafaf1; color: #1e8449; }
+  .tf-btn.wrong { border-color: #e74c3c; background: #fdedec; color: #c0392b; }
+  .tf-btn.reveal { border-color: #27ae60; background: #eafaf1; color: #1e8449; }
+
+  .feedback {
+    margin-top: 12px; padding: 11px 15px; border-radius: 8px;
+    font-size: 0.9rem; display: none;
+  }
+  .feedback.correct { background: #eafaf1; color: #1e8449; border-right: 4px solid #27ae60; }
+  .feedback.wrong { background: #fdedec; color: #922b21; border-right: 4px solid #e74c3c; }
+
+  .submit-section { text-align: center; margin-top: 24px; }
+  .submit-btn {
+    background: linear-gradient(135deg, #1a3c5e, #2d6a9f); color: white;
+    border: none; padding: 14px 40px; border-radius: 999px;
+    font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  .submit-btn:hover { transform: scale(1.04); }
+
+  .score-card {
+    background: linear-gradient(135deg, #1a3c5e, #2d6a9f); color: white;
+    border-radius: 14px; padding: 36px; text-align: center;
+    display: none; margin-top: 24px;
+  }
+  .score-num { font-size: 3.5rem; font-weight: 800; margin: 10px 0; }
+  .score-sub { opacity: 0.85; font-size: 1rem; margin-bottom: 24px; }
+  .restart-btn {
+    background: white; color: #1a3c5e; border: none;
+    padding: 12px 32px; border-radius: 999px; font-size: 1rem;
+    font-weight: 700; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📘 اختبار — نقود وبنوك</h1>
+  <p>تجميعات الاختبارات السابقة</p>
+</div>
+
+<div class="container">
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <div class="progress-label" id="progressLabel">أجبت على 0 من 0</div>
+
+  <div id="quizArea"></div>
+
+  <div class="submit-section">
+    <button class="submit-btn" id="submitBtn" onclick="submitQuiz()">✅ تسليم وعرض النتيجة</button>
+  </div>
+
+  <div class="score-card" id="scoreCard">
+    <h2>🎓 انتهى الاختبار!</h2>
+    <div class="score-num" id="scoreNum">--</div>
+    <div class="score-sub" id="scoreSub"></div>
+    <button class="restart-btn" onclick="restartQuiz()">🔄 إعادة المحاولة</button>
+  </div>
+</div>
+
+<script>
+const mcQuestions = [
+  // من تجميعة الاختيار من متعدد
+  { q: "يمكن للبنوك التجارية أن تحصل على حاجتها من الأموال عن طريق:", options: ["استدعاء القروض", "بيع الممتلكات من الأوراق المالية", "الاقتراض من البنك المركزي أو مؤسسات مالية أخرى", "جميع الإجابات صحيحة"], answer: 3 },
+  { q: "بناءً على ما دراسته فإن منحنى العرض من النقود يكون:", options: ["سالب الميل", "موجب الميل", "مستقيماً أفقياً", "مستقيماً رأسياً"], answer: 1 },
+  { q: "قيمة الاحتياطي القانوني:", options: ["هي احتياطي عام يكونه البنك التجاري بناءً على ما يراه مناسباً", "تودع في حسابات البنك المركزي أو في خزائن البنوك التجارية", "لا يدفع البنك المركزي أي فوائد على الاحتياطي النظامي الذي يودع لديه", "ب و ج صحيحة"], answer: 3 },
+  { q: "عمليات السوق المفتوحة هي:", options: ["تقديم البنك المركزي لقروض مخصومة للبنوك التجارية", "عمليات بيع وشراء السندات الحكومية من قِبل البنك المركزي", "إحدى أدوات السياسة المالية", "أداة للتأثير على الضرائب"], answer: 1 },
+  { q: "يُعد هدف استقرار المستوى العام للأسعار هدفاً:", options: ["وسيطاً", "نهائياً", "آنياً", "مرحلياً"], answer: 1 },
+  { q: "في حالة الكساد يقوم البنك المركزي بتطبيق إحدى أدوات السياسة النقدية وهي:", options: ["بيع السندات الحكومية", "تخفيض سعر الخصم", "زيادة نسبة الاحتياطي القانوني", "رفع سعر الفائدة"], answer: 1 },
+  { q: "إذا قرر البنك المركزي زيادة سعر الفائدة، فسيؤدي هذا إلى:", options: ["انخفاض الاستثمار والاستهلاك", "ارتفاع سعر صرف العملة المحلية وارتفاع الواردات", "زيادة الاستثمار والاستهلاك", "أ و ب"], answer: 0 },
+  { q: "يؤدي التضخم إلى:", options: ["انخفاض الاستثمارات في المشاريع الإنتاجية", "ارتفاع الاستثمارات في المشاريع الإنتاجية", "تحسن أداء وظائف النقود", "لا شيء مما سبق"], answer: 0 },
+  { q: "السياسة الأساسية التي يعتمد ويركز عليها البنك المركزي هي:", options: ["السياسة النقدية", "السياسة الاقتصادية", "السياسة المالية", "لا شيء مما تقدم"], answer: 0 },
+  { q: "تهدف السياسة النقدية إلى:", options: ["تحديد أوجه الإنفاق العام في الدولة", "تحقيق النمو والاستقرار الاقتصادي", "تحقيق التوظف الكامل", "الإجابتان ب و ج"], answer: 3 },
+  { q: "يُسمى البنك المركزي السعودي بـ:", options: ["صندوق النقد الدولي", "مؤسسة النقد العربي السعودي", "صندوق النقد السعودي", "بنك البنوك السعودي"], answer: 1 },
+  { q: "من الوظائف التي يقوم بها البنك المركزي:", options: ["إصدار العملة الوطنية", "إدارة سوق الأسهم", "صيرفي الحكومة ومستشارها المالي", "الإجابتان أ و ج"], answer: 3 },
+  { q: "من أهم الأسباب التي تدعو إلى استقلالية البنك المركزي:", options: ["ارتفاع معدل الاحتياطيات الفائضة", "التقلبات السياسية", "زيادة معدل الاحتياطي القانوني", "لا شيء مما تقدم"], answer: 3 },
+  { q: "يؤدي بيع السندات الحكومية من قِبل البنك المركزي إلى:", options: ["انخفاض كمية النقود", "انخفاض احتياطيات البنوك بمقدار قيمة السندات", "أ و ب", "كل ما ذكر غير صحيح"], answer: 2 },
+  { q: "أنسب العقود الإسلامية لتمويل الواردات هي عقود:", options: ["المضاربة", "المرابحة", "السلم", "الاستصناع"], answer: 1 },
+  { q: "يُعزى التضخم في فكر النقديين إلى:", options: ["تبني البنك المركزي لسياسة نقدية توسعية مستمرة", "انتقال منحنى الطلب الكلي نحو اليمين باستمرار", "زيادة الأجور النقدية", "كل ما ذكر صحيح"], answer: 3 },
+  { q: "في ظل التضخم فإن أصحاب الدخول المتدنية:", options: ["يتضررون", "يستفيدون", "لن تتأثر أحوالهم", "كل ما ذكر غير صحيح"], answer: 0 },
+  { q: "يحدث التضخم المفرط عندما:", options: ["تقوم الحكومة بزيادة الضرائب", "تقوم الحكومة بتمويل العجز الكبير في الموازنة بتخفيض معدل الفائدة", "يقوم البنك المركزي بزيادة نسبة الاحتياطي", "يقوم البنك المركزي بمشاركة عملائه بهدف تحقيق الربح"], answer: 1 },
+  { q: "كل ما يلي يعتبر من الأدوات الكمية للسياسة النقدية، باستثناء:", options: ["تغيير نسبة الاحتياطي القانوني", "الحد من الإنفاق الكلي غير الإنتاجي", "تغيير معدل الخصم", "عمليات السوق المفتوحة"], answer: 1 },
+  { q: "تعني السياسة النقدية التوسعية ما يلي:", options: ["تخفيض سعر الفائدة", "زيادة نسبة الاحتياطي القانوني", "زيادة سعر الخصم", "كل ما تقدم"], answer: 0 },
+  { q: "يشار إلى البنك المركزي باعتباره المقرض الأخير لأنه:", options: ["يقدم القروض إلى البنوك بأقل نسبة فائدة", "يقدم القروض إلى الأفراد بأقل نسبة فائدة", "يقدم القروض إلى البنوك التي تعاني من قلة السيولة", "يقوم بالإشراف على البنوك"], answer: 2 },
+  { q: "من أهم الموارد الخارجية للبنك الإسلامي ما يلي:", options: ["الودائع الاستثمارية", "رأس المال", "احتياطيات ورأس المال", "جميع ما تقدم"], answer: 0 },
+  { q: "استناداً إلى التحليل الكينزي، فإن الزيادة المستمرة في عرض النقد ستؤدي إلى:", options: ["انخفاض مستوى الأسعار", "انخفاض مستوى الإنتاج", "التضخم", "ب و ج"], answer: 2 },
+  { q: "تتحدد قيمة النقود المعدنية:", options: ["بالقيمة السوقية للمادة المصنوعة منها العملة", "بقانون إصدارها من قِبل البنك المركزي", "بمدى تقبلها من قِبل الجمهور", "أ و ب"], answer: 1 },
+  { q: "قاعدة الذهب تأخذ صوراً وأشكالاً من أهمها:", options: ["صورة السبائك الذهبية", "صورة الصرف بالذهب", "صورة المسكوكات الذهبية", "جميع ما سبق"], answer: 3 },
+  { q: "تقدم معادلة فيشر للتبادل ما عدا:", options: ["سرعة دوران النقود", "معدل الفائدة", "المستوى العام للأسعار", "كمية المبادلات من السلع والخدمات"], answer: 1 },
+  { q: "يؤدي تخفيض نسبة الاحتياطي القانوني إلى:", options: ["ارتفاع قيمة مضاعف النقود", "زيادة قدرة البنوك على منح القروض", "انخفاض قدرة البنوك على منح القروض", "أ و ب"], answer: 3 },
+  { q: "أي مما يلي لا تُعتبر من وظائف النقود:", options: ["وسيط للتبادل", "مخزن للقيمة", "وسيلة للمقايضة", "وحدة لقياس القيمة"], answer: 2 },
+  { q: "يمكن للبنك التجاري أن يخلق النقود بواسطة:", options: ["بيع بعض استثماراته", "زيادة احتياطياته", "التوسع في الإقراض طالما كان يمتلك احتياطيات فائضة", "تخفيض التسهيلات الائتمانية"], answer: 2 },
+  { q: "قدرة البنوك على خلق النقود المصرفية:", options: ["مطلقة", "مقيدة", "مطلقة حيناً ومقيدة حيناً آخر", "لا شيء مما تقدم"], answer: 2 },
+  { q: "استناداً إلى النظرية الكينزية لتفضيل السيولة، فإن الطلب على النقود لأغراض المبادلات يتوقف على:", options: ["مستوى الدخل", "معدل الفائدة", "معدل الادخار", "ب و ج"], answer: 0 },
+  { q: "النظم النقدية هي:", options: ["النظام السلعي", "النظام النقدي القانوني أو الورقي", "نظام المقايضة", "أ و ب"], answer: 3 },
+  { q: "مضاعف النقود البسيط هو عبارة عن:", options: ["مقلوب الودائع المشتقة", "مضاعف الودائع الآجلة", "مقلوب نسبة الاحتياطي القانوني", "لا شيء مما سبق"], answer: 2 },
+  { q: "القوة الشرائية للنقود تساوي:", options: ["مقلوب المستوى العام للأسعار مضروباً في المائة", "مقلوب نسبة الاحتياطي القانوني", "المستوى العام للأسعار مضروباً في الدخل المحلي الإجمالي الحقيقي", "لا شيء مما تقدم"], answer: 0 },
+  { q: "من مميزات النقود الإلكترونية ما عدا:", options: ["تعتبر وسيلة دفع تتمتع بالكفاءة", "تعتبر وسيلة تتمتع بانخفاض التكلفة", "لا تسمح بتعزيز الأرصدة النقدية", "سرعة انتقال النقود"], answer: 2 },
+  { q: "من استخدام النقود لما يلي:", options: ["تشجيع التخصص في الإنتاج", "تسهيل عمليات التجارة", "تحقيق العدالة في عمليات التبادل", "كل ما تقدم"], answer: 3 },
+  { q: "أي مما يلي يعتبر من موجودات البنك التجاري؟", options: ["الاحتياطي القانوني", "التسهيلات الائتمانية", "الودائع الجارية", "شيكات لغاية التحصيل"], answer: 1 },
+  { q: "النقود السلعية هي:", options: ["النقود التي تتعادل قيمتها السوقية مع قيمتها كنقود", "النقود التي تعتمد قيمتها على براءة قانون إصدارها من قِبل البنك المركزي", "الودائع الائتمانية الأولية", "الإجابتان أ و ب"], answer: 3 },
+  { q: "تكتب المعادلة التي يتم بموجبها حساب معدل دوران النقود على النحو التالي:", options: ["V = KM/Y", "V = PY/M", "V = MY/P", "V = PM/Y"], answer: 1 },
+  { q: "أي مما يلي يحقق أكبر عائد للبنوك التجارية:", options: ["الودائع لدى البنوك الأخرى", "القروض", "خصم الأوراق المالية", "الاحتياطيات"], answer: 1 },
+  { q: "أي من التالية ليست من قنوات الاستثمار لدى البنوك الإسلامية؟", options: ["المضاربة", "المشاركات", "شراء الديون", "البيوع"], answer: 2 },
+  { q: "بيع الثمن بالعين هو أحد أنواع بيوع الأثجار ويقصد به:", options: ["بيع السلعة شريطة أن يتم السداد بالحال بينما تسلم السلعة لاحقاً", "مبادلة السلعة بالنقد", "بيع النقد بالنقد (الثمن بالثمن)", "لا شيء مما تقدم"], answer: 0 },
+  { q: "يُقال العرض مثالفق (M) عندما:", options: ["تكون الاحتياطيات الإضافية < الودائع تحت الطلب (الجارية)", "تكون العملات المتداولة < الودائع تحت الطلب", "يزيد سعر الفائدة بمعدل فائدة M", "تنقل قيمة المضاعف بمعدل يتبع M"], answer: 2 },
+  { q: "ستنخفض القاعدة النقدية بمقدار الانخفاض في الاحتياطيات الإجمالية عند:", options: ["بيع البنك التجاري سنداً حكومياً من البنك المركزي", "شراء الأفراد سنداً حكومياً من البنك المركزي بشيك مسحوب على بنك تجاري", "شراء المؤسسات سنداً حكومياً من البنك المركزي وتصرف قيمة الشيك نقداً", "جميع الإجابات صحيحة"], answer: 1 },
+  { q: "تحويل الودائع إلى نقود سيؤدي إلى:", options: ["زيادة القاعدة النقدية", "زيادة الاحتياطيات الاختيارية", "زيادة الاحتياطيات الإجمالية", "جميع الإجابات صحيحة"], answer: 2 },
+];
+
+const tfQuestions = [
+  { q: "التضخم هو الارتفاع الكبير والمستمر للمستوى العام للأسعار خلال فترة زمنية معينة.", answer: true },
+  { q: "يظهر الغرض من الطلب على النقود لغرض المضاربة في نظرية كمية النقود.", answer: false },
+  { q: "عندما يكون معدل الفائدة السائد في السوق أقل من معدل الفائدة الطبيعي يزيد الطلب للاحتفاظ بها سائلة من أجل المضاربة.", answer: true },
+  { q: "الدخل الذي تعتمد عليه نظرية فريدمان هو الدخل المؤقت.", answer: false },
+  { q: "كل نقطة على منحنى IS تحقق توازناً في سوق النقود.", answer: false },
+  { q: "في الأجل الطويل تؤدي زيادة العرض من النقود إلى ارتفاع المستوى العام للأسعار مع بقاء معدل البطالة مساوياً للصفر.", answer: true },
+  { q: "قد يتعارض هدف السياسة النقدية المتمثل في استقرار المستوى العام للأسعار مع هدف تخفيض سعر الفائدة.", answer: true },
+  { q: "البنوك المتخصصة لا تقبل الودائع وتقدم القروض بدون فوائد.", answer: true },
+  { q: "من وظائف البنك المركزي قبول الودائع الجارية (البنوك التجارية).", answer: false },
+  { q: "من عيوب وظيفة النقود كوسيلة للتبادل وهو احتمالية فقدها لقوتها الشرائية في حال التضخم (كمخزن للقيمة).", answer: false },
+  { q: "شهدت نسبة النقود المتداولة إلى الودائع الجارية C/D في المملكة ارتفاعاً مع بداية حرب الخليج.", answer: true },
+  { q: "المقاصة هي تسوية الحسابات الدائنة والمدينة بين البنوك التجارية لدى البنك المركزي.", answer: true },
+  { q: "لا يسمح نظام المسكوكات بتداول العملات المعدنية في المعاملات اليومية (نظام السبائك).", answer: false },
+  { q: "بيع البنك التجاري للسندات يؤدي إلى انخفاض عرض النقود (زيادة عرض النقود).", answer: false },
+  { q: "كلما انتقلنا من المقياس الضيق إلى الواسع للنقود ارتفعت السيولة (تقل السيولة).", answer: false },
+  { q: "يعتبر القرش الدارج أول نقود وطنية في المملكة.", answer: true },
+  { q: "كان هدف الدولة السعودية من إصدار ايصالات الحجاج لم يكن لها قوة الإبراء القانونية وهي أول عملة ورقية.", answer: true },
+  { q: "التاجير التمويلي هو عقد بين البنك وبين أحد عملائه يشتري فيه البنك سلعة معلينه سواء من الداخل أو الخارج ويبيعها للعميل بسعر التكلفة مضافاً إليه مبلغ معين ربح للبنك (المرابحة).", answer: false },
+  { q: "اهتمت لجنة بازل الثانية بإجراءات المراجعة الإشرافية.", answer: true },
+  { q: "من عام ٢٠٠٢ وحتى الآن ارتبط الريال السعودي بحقوق السحب الخاصة (الدولار الأمريكي).", answer: false },
+  { q: "الودائع الجارية (تحت الطلب) هي الودائع التي يحصل العميل عليها مقابلها على الفوائد ويتعهد ببقائها وعدم سحبها من زمنية متفق عليها بين الطرفين (الودائع الآجلة).", answer: false },
+  { q: "من مزايا النقود الإلكترونية تقليل استخدام الشيكات.", answer: true },
+  { q: "في نقود الودائع يحق للبائع أن يرفض التعامل بالبطاقات الائتمانية أو الشيكات لأنها لا تتمتع بقوة الإلزام القانوني.", answer: true },
+  { q: "الاحتياطي النظامي هو احتياطي عام يكونه البنك المركزي بناءً على ما يراه مناسباً (الاحتياطي الاختياري).", answer: false },
+  { q: "من الوسائل التي يحصل فيها البنوك التجارية على الأموال السائلة في بيع ما تملكه من الأوراق المالية.", answer: true },
+  { q: "نظرية فريدمان للنقود تعتمد على الدخل الدائم.", answer: true },
+  { q: "من معايير اختيار الهدف الوسيط قدرة البنك المركزي على التحكم التام فيه.", answer: true },
+  { q: "من الأهداف النهائية للسياسة النقدية استقرار الأسواق المالية.", answer: true },
+  { q: "المحور الأساسي لاختلاف البنوك الإسلامية عن البنوك التجارية التقليدية عدم الدخول في عمليات ربوية.", answer: true },
+  { q: "تختلف نقود الودائع عن النقود الورقية في أن نقود الودائع عبارة عن قيود دائنة ومدينة لدى البنوك التجارية.", answer: true },
+  { q: "المعادلات المرتفعة من الفائدة السائدة في السوق تؤثر على ER/D بالانخفاض.", answer: true },
+  { q: "تُعد الأرصدة النقدية من موجودات البنك المركزي.", answer: true },
+  { q: "يُقسم الربح بين المستثمرين حسب نسب المشاركة في رأس المال في حال (المشاركة).", answer: true },
+];
+
+let userAnswers = {};
+let submitted = false;
+
+function buildQuiz() {
+  const total = mcQuestions.length + tfQuestions.length;
+  let html = '';
+
+  html += `<div class="section-title">📝 القسم الأول: اختيار من متعدد (${mcQuestions.length} سؤال)</div>`;
+  mcQuestions.forEach((q, i) => {
+    html += `<div class="card">
+      <div class="q-num"><span class="badge badge-mc">اختيار</span> سؤال ${i+1}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">`;
+    q.options.forEach((opt, j) => {
+      const letters = ['أ', 'ب', 'ج', 'د'];
+      html += `<button class="option-btn" id="mc-${i}-${j}" onclick="selectMC(${i},${j})">${letters[j]}- ${opt}</button>`;
+    });
+    html += `</div><div class="feedback" id="fb-mc-${i}"></div></div>`;
+  });
+
+  html += `<div class="section-title">✅ القسم الثاني: صح وخطأ (${tfQuestions.length} سؤال)</div>`;
+  tfQuestions.forEach((q, i) => {
+    html += `<div class="card">
+      <div class="q-num"><span class="badge badge-tf">صح / خطأ</span> سؤال ${i+1}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="tf-options">
+        <button class="tf-btn" id="tf-${i}-true" onclick="selectTF(${i},true)">✔ صح</button>
+        <button class="tf-btn" id="tf-${i}-false" onclick="selectTF(${i},false)">✘ خطأ</button>
+      </div>
+      <div class="feedback" id="fb-tf-${i}"></div>
+    </div>`;
+  });
+
+  document.getElementById('quizArea').innerHTML = html;
+  document.getElementById('progressLabel').textContent = `أجبت على 0 من ${total}`;
+}
+
+function selectMC(qIdx, optIdx) {
+  if (submitted) return;
+  mcQuestions[qIdx].options.forEach((_, j) => {
+    document.getElementById(`mc-${qIdx}-${j}`).className = 'option-btn';
+  });
+  document.getElementById(`mc-${qIdx}-${optIdx}`).classList.add('selected');
+  userAnswers[`mc-${qIdx}`] = optIdx;
+  updateProgress();
+}
+
+function selectTF(qIdx, val) {
+  if (submitted) return;
+  ['true','false'].forEach(v => document.getElementById(`tf-${qIdx}-${v}`).className = 'tf-btn');
+  document.getElementById(`tf-${qIdx}-${val}`).classList.add('selected');
+  userAnswers[`tf-${qIdx}`] = val;
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = mcQuestions.length + tfQuestions.length;
+  const answered = Object.keys(userAnswers).length;
+  document.getElementById('progressBar').style.width = Math.round((answered/total)*100) + '%';
+  document.getElementById('progressLabel').textContent = `أجبت على ${answered} من ${total}`;
+}
+
+function submitQuiz() {
+  if (submitted) return;
+  submitted = true;
+  let score = 0;
+  const letters = ['أ', 'ب', 'ج', 'د'];
+
+  mcQuestions.forEach((q, i) => {
+    const userAns = userAnswers[`mc-${i}`];
+    const correct = q.answer;
+    q.options.forEach((_, j) => {
+      document.getElementById(`mc-${i}-${j}`).className = 'option-btn';
+      document.getElementById(`mc-${i}-${j}`).disabled = true;
+    });
+    document.getElementById(`mc-${i}-${correct}`).classList.add('reveal');
+    const fb = document.getElementById(`fb-mc-${i}`);
+    fb.style.display = 'block';
+    if (userAns === correct) {
+      score++;
+      fb.className = 'feedback correct';
+      fb.textContent = '✔ إجابة صحيحة!';
+    } else {
+      if (userAns !== undefined) document.getElementById(`mc-${i}-${userAns}`).classList.add('wrong');
+      fb.className = 'feedback wrong';
+      fb.textContent = userAns === undefined
+        ? `✘ لم تجب. الإجابة الصحيحة: ${letters[correct]}- ${q.options[correct]}`
+        : `✘ إجابة خاطئة. الصحيح: ${letters[correct]}- ${q.options[correct]}`;
+    }
+  });
+
+  tfQuestions.forEach((q, i) => {
+    const userAns = userAnswers[`tf-${i}`];
+    const correct = q.answer;
+    ['true','false'].forEach(v => {
+      document.getElementById(`tf-${i}-${v}`).className = 'tf-btn';
+      document.getElementById(`tf-${i}-${v}`).disabled = true;
+    });
+    document.getElementById(`tf-${i}-${correct}`).classList.add('reveal');
+    const fb = document.getElementById(`fb-tf-${i}`);
+    fb.style.display = 'block';
+    if (userAns === correct) {
+      score++;
+      fb.className = 'feedback correct';
+      fb.textContent = '✔ إجابة صحيحة!';
+    } else {
+      if (userAns !== undefined) document.getElementById(`tf-${i}-${userAns}`).classList.add('wrong');
+      fb.className = 'feedback wrong';
+      fb.textContent = `✘ إجابة خاطئة. الصحيح: ${correct ? 'صح ✔' : 'خطأ ✘'}`;
+    }
+  });
+
+  const total = mcQuestions.length + tfQuestions.length;
+  const pct = Math.round((score/total)*100);
+  const grade = pct >= 90 ? '🏆 ممتاز!' : pct >= 75 ? '👍 جيد جداً!' : pct >= 60 ? '📚 مقبول' : '💪 تحتاج مذاكرة أكثر';
+
+  document.getElementById('submitBtn').style.display = 'none';
+  const sc = document.getElementById('scoreCard');
+  sc.style.display = 'block';
+  document.getElementById('scoreNum').textContent = `${score} / ${total}`;
+  document.getElementById('scoreSub').textContent = `${pct}% — ${grade}`;
+  sc.scrollIntoView({ behavior: 'smooth' });
+}
+
+function restartQuiz() {
+  userAnswers = {};
+  submitted = false;
+  document.getElementById('submitBtn').style.display = 'inline-block';
+  document.getElementById('scoreCard').style.display = 'none';
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildQuiz();
+</script>
+</body>
+</html>
